@@ -2,7 +2,7 @@ import { Button, styled, Container, Text } from "@nextui-org/react";
 
 export function App() {
   return (
-    <Container display="flex" justify="center" alignItems="center">
+    <Container display="flex" direction="column">
       <Text h1 css={{ textGradient: "45deg, $blue600 -20%, $pink600 50%" }}>
         Mysterious things are happening...
       </Text>
