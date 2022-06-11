@@ -43,7 +43,6 @@ class Mysterious {
     }
   }
 }
-
 class MysteriousImage {
   constructor(parent, hash, handlePay) {
     this.parent = parent;
@@ -61,10 +60,13 @@ class MysteriousImage {
   }
 
   createPreview() {
-    const parent = this.parent;
-    const { preview, price } = this.data;
+    const preview = this.data.preview;
     this.addImage(preview);
+    this.addButton();
+  }
 
+  addButton(){
+    const parent = this.parent;
     const button = document.createElement("button");
     button.innerText = "Pay to see";
     button.onclick = () => this.handlePay(this);
@@ -74,10 +76,7 @@ class MysteriousImage {
   reveal(imgSrc) {
     const parent = this.parent;
     parent.innerHTML = "";
-
-    const img = document.createElement("img");
-    img.src = imgSrc;
-    parent.appendChild(img);
+    this.addImage(imgSrc);
   }
 
   addImage(imgSrc) {
