@@ -1,5 +1,12 @@
-import { render } from 'preact'
-import { App } from './app'
-import './index.css'
+import { render } from "preact";
+import { App } from "./app";
+import { NextUIProvider } from "@nextui-org/react";
 
-render(<App />, document.getElementById('app'))
+import "./index.css";
+
+render(
+  <NextUIProvider>
+    <App />
+  </NextUIProvider>,
+  document.getElementById("app")
+);
