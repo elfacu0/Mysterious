@@ -1,6 +1,5 @@
 {
-  "extends": ["plugin:react-hooks/recommended", "airbnb", "prettier"],
-  "plugins": ["prettier"],
+  "extends": ["airbnb"],
   "parserOptions": {
     "ecmaVersion": 2020
   },
@@ -8,6 +7,7 @@
     "import/prefer-default-export": "off",
     "react/react-in-jsx-scope": "off",
     "no-unused-vars": "warn",
-    "react/function-component-definition": "off"
+    "react/function-component-definition": "off",
+    "linebreak-style": "off",
   }
 }
