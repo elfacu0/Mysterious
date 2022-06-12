@@ -11,6 +11,7 @@ const {
   collection,
   getDoc,
   doc,
+  addDoc,
 } = require("firebase/firestore/lite");
 
 const firebaseConfig = {
@@ -34,16 +35,25 @@ app.get("/", (req, res) => {
   res.send("Nothing to see here...");
 });
 
+app.post("/save", async (req, res) => {
+  try {
+    const { id, preview } = await saveToDb(req.body);
+    res.send({ id, preview });
+  } catch (e) {
+    res.send({ error: e.message });
+  }
+});
+
 app.get("/preview/:id", async (req, res) => {
   const preview = await getPreview(req.params.id);
   res.send(preview);
 });
 
-app.get("/payment", (req, res) => {
+app.get("/pay", (req, res) => {
   res.redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 });
 
-app.post("/payment", async (req, res) => {
+app.post("/pay", async (req, res) => {
   const { userSignedTransaction, id } = req.body;
   const transactionToSubmit = TransactionBuilder.fromXDR(
     userSignedTransaction,
@@ -52,16 +62,17 @@ app.post("/payment", async (req, res) => {
 
   try {
     const transaction = transactionToSubmit._operations[0];
-    const { type, data, price } = await getOriginal(id);
-    if (transaction.destination != process.env.DESTINATION_PUBLIC_KEY)
+    const { type, address, data, price } = await getOriginal(id);
+    if (transaction.destination != process.env.PUBLIC_KEY)
       throw new Error("Destination incorrect");
     if (transaction.amount != price) throw new Error("Price incorrect");
+    await payClient(address,price);
     res.send({
       type,
       data,
     });
   } catch (e) {
-    res.send({ error: "Payment Failed" + e });
+    res.send({ error: "Payment Failed" + e.message });
   }
 });
 
@@ -69,9 +80,8 @@ async function getPreview(id) {
   const col = collection(db, "mysterious-elements");
   const query = await getDoc(doc(col, id));
   const data = query.data();
-  const { preview, price } = data;
-  const res = { preview, price };
-  return res;
+  const { type, preview, price } = data;
+  return { type, preview, price };
 }
 
 async function getOriginal(id) {
@@ -79,6 +89,45 @@ async function getOriginal(id) {
   const query = await getDoc(doc(col, id));
   const data = query.data();
   return data;
+}
+
+async function saveToDb(params) {
+  const { address, type, data, preview, price } = params;
+  if (isNaN(Number(price))) throw new Error("Price is not a number");
+  const col = collection(db, "mysterious-elements");
+  const res = await addDoc(col, {
+    address,
+    type,
+    data,
+    preview,
+    price,
+  });
+  return { id: res.id, preview };
+}
+
+async function payClient(address,price){
+  const sourceAccount = await server.loadAccount(process.env.PUBLIC_KEY);
+  const fee = await server.fetchBaseFee();
+  const amount = ((Number(price) * 0.99) - fee).toString();
+  const tx = new TransactionBuilder(sourceAccount, {
+    fee,
+    networkPassphrase: "Test SDF Network ; September 2015",
+  })
+    .addOperation(
+      Operation.payment({
+        amount,
+        asset: Asset.native(),
+        destination: address,
+      })
+    )
+    .setTimeout(60 * 10)
+    .build();
+  tx.sign(Keypair.fromSecret(process.env.SECRET_KEY));
+  try {
+    await server.submitTransaction(tx);
+  } catch (e) {
+    console.log("Payment failed");
+  }
 }
 
 app.listen(port, () => {
