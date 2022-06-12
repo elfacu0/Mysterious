@@ -68,7 +68,7 @@ app.post("/pay", async (req, res) => {
     const { type, address, data, price } = await getOriginal(id);
     if (transaction.destination != process.env.PUBLIC_KEY)
       throw new Error("Destination incorrect");
-    if (transaction.amount != price) throw new Error("Price incorrect");
+    if (Number(transaction.amount) != Number(price)) throw new Error("Price incorrect");
     await payClient(address,price);
     res.send({
       type,
