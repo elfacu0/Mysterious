@@ -4,23 +4,30 @@ import {
   Button,
   Text,
   Input,
-  Textarea,
   styled,
   Image,
   Container,
-  Radio,
   Spacer,
 } from "@nextui-org/react";
 import { Pixelify } from "react-pixelify";
 import { useState, useRef } from "preact/hooks";
+import { api } from "../services/api";
 import { primaryGradientColor } from "../constants";
 
 export const FormModal = ({ open, onClose }) => {
   const [image, setImage] = useState(null);
   const [inputRange, setInputRange] = useState(5);
   const [radioSelected, setRadioSelected] = useState("image");
+  const [formData, setFormData] = useState({
+    address: "",
+    type: radioSelected,
+    price: "",
+    data: "",
+    preview: "",
+  });
 
   const inputRef = useRef(null);
+  const pixelImgRef = useRef(null);
 
   const handleInputChange = (file) => {
     if (file.target.files[0]) {
@@ -29,7 +36,6 @@ export const FormModal = ({ open, onClose }) => {
       setImage(null);
     }
   };
-
   const renderImageItems = () => (
     <Container dir="column" justify="center" align="center">
       <Label
@@ -53,24 +59,32 @@ export const FormModal = ({ open, onClose }) => {
         <>
           <Label>
             Original Image
-            <Image src={image} />
+            <Image src={image} ref={pixelImgRef}/>
           </Label>
-          <input
-            type="range"
-            onChange={(e) => setInputRange(e.target.value)}
-            step="1"
-            min="5"
-            max="50"
-          />
+          <Label>
+            How pixelated do you want it?
+            <input
+              type="range"
+              onChange={(e) => setInputRange(e.target.value)}
+              step="1"
+              min="5"
+              max="50"
+            />
+          </Label>
           <Label>
             Resultant Image
-            <Pixelify src={image} pixelSize={inputRange} />
+            <Pixelify
+              src={image}
+              pixelSize={inputRange}
+              width={200}
+              height={200}
+              ref={pixelImgRef}
+            />
           </Label>
         </>
       )}
     </Container>
   );
-
   const renderRadioButtons = () => (
     <Container>
       <p>Choose One</p>
@@ -79,7 +93,10 @@ export const FormModal = ({ open, onClose }) => {
         value="image"
         name="option"
         defaultChecked={radioSelected === "image"}
-        onChange={() => setRadioSelected("image")}
+        onChange={() => {
+          setRadioSelected("image");
+          setFormData({ ...formData, type: "image" });
+        }}
       />{" "}
       Image
       <Spacer />
@@ -88,12 +105,35 @@ export const FormModal = ({ open, onClose }) => {
         value="text"
         name="option"
         defaultChecked={radioSelected === "text"}
-        onChange={() => setRadioSelected("text")}
+        onChange={() => {
+          setRadioSelected("text");
+          setFormData({ ...formData, type: "text" });
+        }}
       />{" "}
       Text
     </Container>
   );
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    try {
+      const form = new FormData();
+      Object.keys(formData).forEach((key) => form.append(key, formData[key]));
+      form.append("data", inputRef.current.files[0]);
+      console.log(pixelImgRef.current)
+      api
+        .post("/save", form)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  console.log(formData);
   return (
     <Modal
       closeButton
@@ -111,33 +151,52 @@ export const FormModal = ({ open, onClose }) => {
           </Text>
         </Text>
       </Modal.Header>
-      <Modal.Body>
-        {renderRadioButtons()}
-        {radioSelected === "image" ? (
-          renderImageItems()
-        ) : (
-          <Textarea
+      <form>
+        <Modal.Body>
+          {renderRadioButtons()}
+          {radioSelected === "image" ? (
+            renderImageItems()
+          ) : (
+            <Input
+              bordered
+              color="secondary"
+              size="lg"
+              label="Text to encrypt"
+              onChange={(e) =>
+                setFormData({ ...formData, data: e.target.value })
+              }
+              value={radioSelected === "text" ? formData.data : ""}
+            />
+          )}
+
+          <Input
             bordered
             color="secondary"
             size="lg"
-            label="Text to encrypt"
+            label="Public Address"
+            value={formData.address}
+            onChange={(e) =>
+              setFormData({ ...formData, address: e.target.value })
+            }
           />
-        )}
-
-        <Input bordered color="secondary" size="lg" label="Public Address" />
-        <Input
-          bordered
-          color="secondary"
-          size="md"
-          placeholder="$10"
-          label="Price"
-        />
-      </Modal.Body>
+          <Input
+            bordered
+            color="secondary"
+            size="md"
+            placeholder="$10"
+            label="Price"
+            value={formData.price}
+            onChange={(e) => {
+              setFormData({ ...formData, price: Number(e.target.value) });
+            }}
+          />
+        </Modal.Body>
+      </form>
       <Modal.Footer>
         <Button auto bordered color="error" onClick={onClose}>
           Close
         </Button>
-        <Button auto onClick={() => {}}>
+        <Button auto onClick={handleSubmit}>
           Submit
         </Button>
       </Modal.Footer>
