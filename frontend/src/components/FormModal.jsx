@@ -59,7 +59,7 @@ export const FormModal = ({ open, onClose }) => {
         <>
           <Label>
             Original Image
-            <Image src={image} ref={pixelImgRef} />
+            <Image src={image} />
           </Label>
           <Label>
             How pixelated do you want it?
@@ -126,15 +126,18 @@ export const FormModal = ({ open, onClose }) => {
     xhr.responseType = "blob";
     xhr.send();
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.type === "image") {
       convertToBase64(image, (base64) => {
-        setFormData({ ...formData, data: base64 });
+        const previewBase64 =
+          pixelImgRef.current.canvas.toDataURL("image/jpeg");
         api
           .post("/save", {
             ...formData,
             data: base64,
+            preview: previewBase64,
           })
           .then((res) => {
             console.log(res);
@@ -143,8 +146,18 @@ export const FormModal = ({ open, onClose }) => {
             console.log(err);
           });
       });
+    } else {
+      api
+        .post("/save", formData)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
+
   return (
     <Modal
       closeButton
