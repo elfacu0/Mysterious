@@ -4,14 +4,96 @@ import {
   Button,
   Text,
   Input,
-  Row,
-  Checkbox,
   Textarea,
   styled,
+  Image,
+  Container,
+  Radio,
+  Spacer,
 } from "@nextui-org/react";
+import { Pixelify } from "react-pixelify";
+import { useState, useRef } from "preact/hooks";
 import { primaryGradientColor } from "../constants";
 
 export const FormModal = ({ open, onClose }) => {
+  const [image, setImage] = useState(null);
+  const [inputRange, setInputRange] = useState(5);
+  const [radioSelected, setRadioSelected] = useState("image");
+
+  const inputRef = useRef(null);
+
+  const handleInputChange = (file) => {
+    if (file.target.files[0]) {
+      setImage(URL.createObjectURL(file.target.files[0]));
+    } else {
+      setImage(null);
+    }
+  };
+
+  const renderImageItems = () => (
+    <Container dir="column" justify="center" align="center">
+      <Label
+        css={{
+          border: image ? "1px solid green" : `1px solid violet`,
+        }}
+      >
+        <Input
+          type="file"
+          id="file"
+          placeholder="Password"
+          css={{ d: "none" }}
+          onChange={handleInputChange}
+          ref={inputRef}
+          accept="image/*"
+        />
+        Upload Image
+      </Label>
+
+      {image && (
+        <>
+          <Label>
+            Original Image
+            <Image src={image} />
+          </Label>
+          <input
+            type="range"
+            onChange={(e) => setInputRange(e.target.value)}
+            step="1"
+            min="5"
+            max="50"
+          />
+          <Label>
+            Resultant Image
+            <Pixelify src={image} pixelSize={inputRange} />
+          </Label>
+        </>
+      )}
+    </Container>
+  );
+
+  const renderRadioButtons = () => (
+    <Container>
+      <p>Choose One</p>
+      <input
+        type="radio"
+        value="image"
+        name="option"
+        defaultChecked={radioSelected === "image"}
+        onChange={() => setRadioSelected("image")}
+      />{" "}
+      Image
+      <Spacer />
+      <input
+        type="radio"
+        value="text"
+        name="option"
+        defaultChecked={radioSelected === "text"}
+        onChange={() => setRadioSelected("text")}
+      />{" "}
+      Text
+    </Container>
+  );
+
   return (
     <Modal
       closeButton
@@ -30,33 +112,25 @@ export const FormModal = ({ open, onClose }) => {
         </Text>
       </Modal.Header>
       <Modal.Body>
-        <Textarea
-          bordered
-          color="secondary"
-          size="lg"
-          label="Text to encrypt"
-        />
-        <Label>
-          <Input
-            type="file"
-            id="file"
-            placeholder="Password"
-            css={{ d: "none" }}
+        {renderRadioButtons()}
+        {radioSelected === "image" ? (
+          renderImageItems()
+        ) : (
+          <Textarea
+            bordered
+            color="secondary"
+            size="lg"
+            label="Text to encrypt"
           />
-          Upload Image
-        </Label>
-        <Input
-          bordered
-          color="secondary"
-          size="lg"
-          label="Public Address"
-        />
+        )}
+
+        <Input bordered color="secondary" size="lg" label="Public Address" />
         <Input
           bordered
           color="secondary"
           size="md"
           placeholder="$10"
-          label="Amount"
+          label="Price"
         />
       </Modal.Body>
       <Modal.Footer>
@@ -75,6 +149,5 @@ const Label = styled("label", {
   display: "inline-block",
   padding: "6px 12px",
   cursor: "pointer",
-  border: `1px solid violet`,
   borderRadius: "999px",
 });
