@@ -4,7 +4,7 @@ const server = new Server("https://horizon-testnet.stellar.org");
 
 const DESTINATION_KEY =
   "GA3Z7M2YJE5M5NP5LU73C7ZZRNEUN63XSLUG5J5AK56HQ6GXDBBG7OOR";
-const API_URL = "http://localhost:3000";
+const API_URL = "https://solar-heliotrope-protest.glitch.me";
 //Object oriented programs are offered as alternatives to correct ones
 class Mysterious {
   constructor() {
@@ -106,6 +106,7 @@ class MysteriousElement {
     const parent = this.parent;
     const button = document.createElement("button");
     button.innerText = "Pay to see";
+    button.classList.add("mysterious-button");
     button.onclick = () => this.handlePay(this);
     parent.appendChild(button);
   }
