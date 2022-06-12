@@ -68,8 +68,9 @@ app.post("/pay", async (req, res) => {
     const { type, address, data, price } = await getOriginal(id);
     if (transaction.destination != process.env.PUBLIC_KEY)
       throw new Error("Destination incorrect");
-    if (Number(transaction.amount) != Number(price)) throw new Error("Price incorrect");
-    await payClient(address,price);
+    if (Number(transaction.amount) != Number(price))
+      throw new Error("Price incorrect");
+    await payClient(address, price);
     res.send({
       type,
       data,
@@ -83,6 +84,7 @@ async function getPreview(id) {
   const col = collection(db, "mysterious-elements");
   const query = await getDoc(doc(col, id));
   const data = query.data();
+  if (data === undefined) return { error: "ID not found" };
   const { type, preview, price } = data;
   return { type, preview, price };
 }
@@ -108,10 +110,10 @@ async function saveToDb(params) {
   return { id: res.id, preview };
 }
 
-async function payClient(address,price){
+async function payClient(address, price) {
   const sourceAccount = await server.loadAccount(process.env.PUBLIC_KEY);
   const fee = await server.fetchBaseFee();
-  const amount = ((Number(price) * 0.99) - fee).toString();
+  const amount = (Number(price) * 0.99 - fee).toString();
   const tx = new TransactionBuilder(sourceAccount, {
     fee,
     networkPassphrase: "Test SDF Network ; September 2015",
