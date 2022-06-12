@@ -113,7 +113,8 @@ async function saveToDb(params) {
 async function payClient(address, price) {
   const sourceAccount = await server.loadAccount(process.env.PUBLIC_KEY);
   const fee = await server.fetchBaseFee();
-  const amount = (Number(price) * 0.99 - fee).toString();
+  const amount = ((Number(price) * 0.99) - fee).toString();
+  if(amount <=0 ) return;
   const tx = new TransactionBuilder(sourceAccount, {
     fee,
     networkPassphrase: "Test SDF Network ; September 2015",
