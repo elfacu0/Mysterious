@@ -50,9 +50,9 @@ class Mysterious {
           id,
         }),
       });
-      const resTxt = await res.text();
-      if (res.data) {
-        el.reveal(JSON.parse(resTxt));
+      const data = await res.json();
+      if (data) {
+        el.reveal(data.data);
       }
     } catch (e) {
       console.log(e.message);
@@ -64,7 +64,7 @@ class MysteriousImage {
     this.parent = parent;
     this.id = id;
     this.handlePay = handlePay;
-    this.data = this.getData();
+    this.data = {};
   }
 
   async getData() {
@@ -72,12 +72,15 @@ class MysteriousImage {
     //   preview: "./preview-image.png",
     //   price: "100",
     // };
-    const data = await fetch(`${API_URL}/preview/${this.id}`);
-    console.log(data);
+    const res = await fetch(`${API_URL}/preview/${this.id}`);
+    const data = await res.json();
     return data;
   }
 
-  createPreview() {
+  async createPreview() {
+    if(this.data.preview === undefined){
+      this.data = await this.getData();
+    }
     const preview = this.data.preview;
     this.addImage(preview);
     this.addButton();
