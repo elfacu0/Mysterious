@@ -4,6 +4,7 @@ const server = new Server("https://horizon-testnet.stellar.org");
 
 const DESTINATION_KEY =
   "GA3Z7M2YJE5M5NP5LU73C7ZZRNEUN63XSLUG5J5AK56HQ6GXDBBG7OOR";
+const API_URL = "https://solar-heliotrope-protest.glitch.me";
 //Object oriented programs are offered as alternatives to correct ones
 class Mysterious {
   constructor() {
@@ -19,8 +20,8 @@ class Mysterious {
   parseMysteriousImages() {
     const mis = document.querySelectorAll(".mysterious-image");
     mis.forEach((mi) => {
-      const hash = mi.dataset.hashId;
-      const miInstance = new MysteriousImage(mi, hash, this.handlePay.bind(this));
+      const id = mi.dataset.hashId;
+      const miInstance = new MysteriousImage(mi, id, this.handlePay.bind(this));
       this.mysteriousImages.push(miInstance);
     });
   }
@@ -33,39 +34,59 @@ class Mysterious {
 
   async handlePay(el) {
     el.showLoading();
-    const signedXdr = await this.simpleSigner.createPayment(el.data.price, DESTINATION_KEY);
-    // const res = fetch("...."); success or dont if sucess then res.img = imgSrc
-    const res = await {
-      data: "https://argentinaprograma.com/static/media/logo.b70109da.jpg",
-    };
-    if (res.data) {
-      el.reveal(res.data);
+    try {
+      const userSignedTransaction = await this.simpleSigner.createPayment(
+        el.data.price,
+        DESTINATION_KEY
+      );
+      const id = el.id;
+      const res = await fetch(`${API_URL}/pay`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userSignedTransaction,
+          id,
+        }),
+      });
+      const data = await res.json();
+      if (data) {
+        el.reveal(data.data);
+      }
+    } catch (e) {
+      console.log(e.message);
     }
   }
 }
 class MysteriousImage {
-  constructor(parent, hash, handlePay) {
+  constructor(parent, id, handlePay) {
     this.parent = parent;
-    this.hash = hash;
+    this.id = id;
     this.handlePay = handlePay;
-    this.data = this.getData();
+    this.data = {};
   }
 
-  getData() {
-    const data = {
-      preview: "./preview-image.png",
-      price: "100",
-    };
+  async getData() {
+    // const data = {
+    //   preview: "./preview-image.png",
+    //   price: "100",
+    // };
+    const res = await fetch(`${API_URL}/preview/${this.id}`);
+    const data = await res.json();
     return data;
   }
 
-  createPreview() {
+  async createPreview() {
+    if(this.data.preview === undefined){
+      this.data = await this.getData();
+    }
     const preview = this.data.preview;
     this.addImage(preview);
     this.addButton();
   }
 
-  addButton(){
+  addButton() {
     const parent = this.parent;
     const button = document.createElement("button");
     button.innerText = "Pay to see";
@@ -100,24 +121,22 @@ class SimpleSigner {
 
   async createPayment(amount, destination) {
     this.signedTransaction = "";
-    if(this.publicKey === ""){
-        this.openConnectWindow();
-        try{
-            await this.waitForPublickKey();
-        }catch{
-            // show error;
-            console.log("error when creating payment");
-            return;
-        }
-    }
-    console.log(this.publicKey);
-    const unsignedXdr = await this.createXdr(amount, destination);
-    console.log(unsignedXdr);
-    try{
-        await this.signTransaction(unsignedXdr);
-    }catch{
+    if (this.publicKey === "") {
+      this.openConnectWindow();
+      try {
+        await this.waitForPublickKey();
+      } catch {
         // show error;
+        console.log("error when creating payment");
         return;
+      }
+    }
+    const unsignedXdr = await this.createXdr(amount, destination);
+    try {
+      await this.signTransaction(unsignedXdr);
+    } catch {
+      // show error;
+      return;
     }
     return this.signedTransaction;
   }
@@ -143,7 +162,6 @@ class SimpleSigner {
     }
   }
 
-
   async createXdr(amount, destination) {
     const sourceAccount = await server.loadAccount(this.publicKey);
     const tx = new TransactionBuilder(sourceAccount, {
@@ -168,20 +186,17 @@ class SimpleSigner {
       "Sign_Window",
       "width=360, height=700"
     );
-    try{
-        await this.waitForSignedTransaction();
-    }catch{
-        //show error
-        console.log("ERROR when signing transaction");
-        return;
+    try {
+      await this.waitForSignedTransaction();
+    } catch {
+      //show error
+      console.log("ERROR when signing transaction");
+      return;
     }
   }
 
   async handleSignTransaction(e) {
-    if (
-      e.data.type === "onSign" &&
-      e.data.page === "sign"
-    ) {
+    if (e.data.type === "onSign" && e.data.page === "sign") {
       const eventMessage = e.data;
       this.signedTransaction = eventMessage.message.signedXDR;
     }
