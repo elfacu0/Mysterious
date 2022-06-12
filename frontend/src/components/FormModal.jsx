@@ -59,7 +59,7 @@ export const FormModal = ({ open, onClose }) => {
         <>
           <Label>
             Original Image
-            <Image src={image} ref={pixelImgRef}/>
+            <Image src={image} ref={pixelImgRef} />
           </Label>
           <Label>
             How pixelated do you want it?
@@ -113,27 +113,38 @@ export const FormModal = ({ open, onClose }) => {
       Text
     </Container>
   );
-
+  const convertToBase64 = (url, callback) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        callback(reader.result);
+      };
+      reader.readAsDataURL(xhr.response);
+    };
+    xhr.open("GET", url);
+    xhr.responseType = "blob";
+    xhr.send();
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const form = new FormData();
-      Object.keys(formData).forEach((key) => form.append(key, formData[key]));
-      form.append("data", inputRef.current.files[0]);
-      console.log(pixelImgRef.current)
-      api
-        .post("/save", form)
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.log(error);
+    if (formData.type === "image") {
+      convertToBase64(image, (base64) => {
+        setFormData({ ...formData, data: base64 });
+        api
+          .post("/save", {
+            ...formData,
+            data: base64,
+          })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
     }
   };
-  console.log(formData);
   return (
     <Modal
       closeButton
@@ -187,7 +198,7 @@ export const FormModal = ({ open, onClose }) => {
             label="Price"
             value={formData.price}
             onChange={(e) => {
-              setFormData({ ...formData, price: Number(e.target.value) });
+              setFormData({ ...formData, price: e.target.value });
             }}
           />
         </Modal.Body>
