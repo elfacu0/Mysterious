@@ -128,9 +128,7 @@ class SimpleSigner {
         return;
       }
     }
-    console.log(this.publicKey);
     const unsignedXdr = await this.createXdr(amount, destination);
-    console.log(unsignedXdr);
     try {
       await this.signTransaction(unsignedXdr);
     } catch {
