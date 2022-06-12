@@ -16,8 +16,8 @@ app.get("/", (req, res) => {
   res.send("Nothing to see here...");
 });
 
-app.get("/preview/:id", async (req, res) => {
-  const preview = await getPreview(req.params.id);
+app.get("/preview/:id", (req, res) => {
+  const preview = getPreview(req.params.id);
   res.send(preview);
 });
 
