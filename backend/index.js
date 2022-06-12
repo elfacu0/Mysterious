@@ -31,7 +31,7 @@ const { Keypair, Asset, Server, TransactionBuilder, Operation } = sdk;
 const SERVER_URL =
   process.env.SERVER_URL || "https://horizon-testnet.stellar.org";
 const server = new Server(SERVER_URL);
-app.use(express.static(path.resolve(__dirname, '../frontend/dist')));
+app.use('/dist', express.static('dist'));
 
 
 app.get("/", (req, res) => {
