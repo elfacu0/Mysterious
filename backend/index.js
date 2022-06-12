@@ -30,6 +30,7 @@ const sdk = require("stellar-sdk");
 const { Keypair, Asset, Server, TransactionBuilder, Operation } = sdk;
 const SERVER_URL =
   process.env.SERVER_URL || "https://horizon-testnet.stellar.org";
+const server = new Server(SERVER_URL);
 
 app.get("/", (req, res) => {
   res.send("Nothing to see here...");
