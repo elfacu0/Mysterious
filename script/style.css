@@ -1,33 +1,23 @@
 *{
-    width: 100vw;
-    height: 100vh;
     margin: 0px;
 }
 
-.mysterious-image{
-    max-width: 500px;
-    max-height: 500px;
-    position: relative;
-    display: flex;
-    align-items: center; 
-    justify-content: center;
-}
-
-.mysterious-image > button{
-    max-width: 80px;
-    max-height: 40px;
-    border-radius: 50px;
-    background-color: #6ea2d1;
-    color: white;
-}
-
-.mysterious-image > img{
-    position: absolute;
-    z-index: -1;
+.container{
     width: 100%;
     height: 100%;
+    padding-bottom: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: #16181b;
 }
 
-.mysterious-image > button:hover{
-    cursor: pointer;
+.image{
+    height: 500px;
+    width: 500px;
+}
+
+.mysterious-text > span{
+    color: white;
 }
