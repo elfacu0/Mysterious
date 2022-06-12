@@ -2,7 +2,6 @@ import { Modal, Button, Text, Grid, Collapse } from "@nextui-org/react";
 import { primaryGradientColor } from "../constants";
 
 export const SuccessFormModal = ({ open, onClose, hash }) => {
-  console.log(hash);
   return (
     <Modal
       scroll

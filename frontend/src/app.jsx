@@ -11,7 +11,6 @@ export function App() {
   const [openFAQModal, setOpenFAQModal] = useState(false);
   const [openFormModal, setOpenFormModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
-
   const onSuccessFormModal = () => {
     setOpenFormModal(false);
     setOpenSuccessModal(true);
@@ -80,7 +79,7 @@ export function App() {
           How does it works?
         </Button>
       </Container>
-      {hash && renderSuccessModal()}
+      {renderSuccessModal()}
       {openFormModal && renderFormModal()}
       {openFAQModal && renderFAQModal()}
     </Container>

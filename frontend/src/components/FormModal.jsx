@@ -14,7 +14,7 @@ import { useState, useRef } from "preact/hooks";
 import { api } from "../services/api";
 import { primaryGradientColor } from "../constants";
 
-export const FormModal = ({ open, onClose, setHash }) => {
+export const FormModal = ({ open, onClose, setHash, onSuccess }) => {
   const [image, setImage] = useState(null);
   const [inputRange, setInputRange] = useState(5);
   const [radioSelected, setRadioSelected] = useState("image");
@@ -152,6 +152,7 @@ export const FormModal = ({ open, onClose, setHash }) => {
           console.log(err);
         });
     }
+    onSuccess()
   };
 
   return (
