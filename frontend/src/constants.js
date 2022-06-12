@@ -1,0 +1,1 @@
+export const primaryGradientColor = "45deg, $blue600 -20%, $pink600 50%"
