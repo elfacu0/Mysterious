@@ -5,7 +5,25 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 const port = process.env.PORT || 3000;
 
-// const firebase = require('firebase');
+const { initializeApp } = require("firebase/compat/app");
+const {
+  getFirestore,
+  collection,
+  getDoc,
+  doc,
+} = require("firebase/firestore/lite");
+
+const firebaseConfig = {
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGIN_SENDER_ID,
+  appId: process.env.APP_ID,
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 
 const sdk = require("stellar-sdk");
 const { Keypair, Asset, Server, TransactionBuilder, Operation } = sdk;
@@ -16,12 +34,12 @@ app.get("/", (req, res) => {
   res.send("Nothing to see here...");
 });
 
-app.get("/preview/:id", (req, res) => {
-  const preview = getPreview(req.params.id);
+app.get("/preview/:id", async (req, res) => {
+  const preview = await getPreview(req.params.id);
   res.send(preview);
 });
 
-app.get("/payment", function (req, res) {
+app.get("/payment", (req, res) => {
   res.redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 });
 
@@ -34,7 +52,7 @@ app.post("/payment", async (req, res) => {
 
   try {
     const transaction = transactionToSubmit._operations[0];
-    const { price, type, data } = await getOriginal(id);
+    const { type, data, price } = await getOriginal(id);
     if (transaction.destination != process.env.DESTINATION_PUBLIC_KEY)
       throw new Error("Destination incorrect");
     if (transaction.amount != price) throw new Error("Price incorrect");
@@ -47,20 +65,20 @@ app.post("/payment", async (req, res) => {
   }
 });
 
-function getPreview(id) {
-  return {
-    price: 100,
-    type: "image",
-    preview: "https://argentinaprograma.com/static/media/logo.b70109da.jpg",
-  };
+async function getPreview(id) {
+  const col = collection(db, "mysterious-elements");
+  const query = await getDoc(doc(col, id));
+  const data = query.data();
+  const { preview, price } = data;
+  const res = { preview, price };
+  return res;
 }
 
-function getOriginal(id) {
-  return {
-    price: 100,
-    type: "image",
-    preview: "https://argentinaprograma.com/static/media/logo.b70109da.jpg",
-  };
+async function getOriginal(id) {
+  const col = collection(db, "mysterious-elements");
+  const query = await getDoc(doc(col, id));
+  const data = query.data();
+  return data;
 }
 
 app.listen(port, () => {
