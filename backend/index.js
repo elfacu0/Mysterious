@@ -2,9 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const path = require('path');
-
 app.use(bodyParser.json());
+const cors = require("cors");
+app.use(cors());
 const port = process.env.PORT || 3000;
 
 const { initializeApp } = require("firebase/compat/app");
@@ -33,8 +33,6 @@ const { Keypair, Asset, Server, TransactionBuilder, Operation } = sdk;
 const SERVER_URL =
   process.env.SERVER_URL || "https://horizon-testnet.stellar.org";
 const server = new Server(SERVER_URL);
-app.use('/dist', express.static('dist'));
-
 
 app.get("/", (req, res) => {
   res.send("Nothing to see here...");
@@ -70,8 +68,15 @@ app.post("/pay", async (req, res) => {
     const { type, address, data, price } = await getOriginal(id);
     if (transaction.destination != process.env.PUBLIC_KEY)
       throw new Error("Destination incorrect");
-    if (transaction.amount != price) throw new Error("Price incorrect");
-    await payClient(address,price);
+    if (Number(transaction.amount) != Number(price))
+      throw new Error("Price incorrect");
+    if (address) {
+      try {
+        await payClient(address, price);
+      } catch (e) {
+        console.log("Failed to pay client");
+      }
+    }
     res.send({
       type,
       data,
@@ -85,6 +90,7 @@ async function getPreview(id) {
   const col = collection(db, "mysterious-elements");
   const query = await getDoc(doc(col, id));
   const data = query.data();
+  if (data === undefined) return { error: "ID not found" };
   const { type, preview, price } = data;
   return { type, preview, price };
 }
@@ -97,9 +103,18 @@ async function getOriginal(id) {
 }
 
 async function saveToDb(params) {
-  const { address, type, data, preview, price } = params;
+  const { address, type, data, price } = params;
+  let { preview } = params;
   if (isNaN(Number(price))) throw new Error("Price is not a number");
+  if (Number(price) < 100) throw new Error("Price must be higher than 100");
   const col = collection(db, "mysterious-elements");
+  if (type == "text") {
+    preview =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        .split(" ")
+        .splice(0, data.split(" ").length)
+        .join(" ");
+  }
   const res = await addDoc(col, {
     address,
     type,
@@ -110,10 +125,11 @@ async function saveToDb(params) {
   return { id: res.id, preview };
 }
 
-async function payClient(address,price){
+async function payClient(address, price) {
   const sourceAccount = await server.loadAccount(process.env.PUBLIC_KEY);
   const fee = await server.fetchBaseFee();
-  const amount = ((Number(price) * 0.99) - fee).toString();
+  const amount = (Number(price) * 0.99 - fee).toString();
+  if (amount <= 0) return;
   const tx = new TransactionBuilder(sourceAccount, {
     fee,
     networkPassphrase: "Test SDF Network ; September 2015",
@@ -134,10 +150,6 @@ async function payClient(address,price){
     console.log("Payment failed");
   }
 }
-
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
