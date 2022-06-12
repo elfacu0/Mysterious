@@ -4,17 +4,21 @@ const server = new Server("https://horizon-testnet.stellar.org");
 
 const DESTINATION_KEY =
   "GA3Z7M2YJE5M5NP5LU73C7ZZRNEUN63XSLUG5J5AK56HQ6GXDBBG7OOR";
-const API_URL = "https://solar-heliotrope-protest.glitch.me";
+const API_URL = "http://localhost:3000";
 //Object oriented programs are offered as alternatives to correct ones
 class Mysterious {
   constructor() {
     this.mysteriousImages = [];
+    this.mysteriousTexts = [];
     this.simpleSigner = new SimpleSigner();
   }
 
   parse() {
     this.parseMysteriousImages();
     this.previewMysteriousImages();
+
+    this.parseMysteriousTexts();
+    this.previewMysteriousTexts();
   }
 
   parseMysteriousImages() {
@@ -28,6 +32,21 @@ class Mysterious {
 
   previewMysteriousImages() {
     this.mysteriousImages.forEach((mi) => {
+      mi.createPreview();
+    });
+  }
+
+  parseMysteriousTexts() {
+    const mis = document.querySelectorAll(".mysterious-text");
+    mis.forEach((mi) => {
+      const id = mi.dataset.hashId;
+      const miInstance = new MysteriousText(mi, id, this.handlePay.bind(this));
+      this.mysteriousTexts.push(miInstance);
+    });
+  }
+
+  previewMysteriousTexts() {
+    this.mysteriousTexts.forEach((mi) => {
       mi.createPreview();
     });
   }
@@ -51,6 +70,7 @@ class Mysterious {
         }),
       });
       const data = await res.json();
+      console.log(data);
       if (data) {
         el.reveal(data.data);
       }
@@ -59,7 +79,7 @@ class Mysterious {
     }
   }
 }
-class MysteriousImage {
+class MysteriousElement {
   constructor(parent, id, handlePay) {
     this.parent = parent;
     this.id = id;
@@ -68,21 +88,17 @@ class MysteriousImage {
   }
 
   async getData() {
-    // const data = {
-    //   preview: "./preview-image.png",
-    //   price: "100",
-    // };
     const res = await fetch(`${API_URL}/preview/${this.id}`);
     const data = await res.json();
     return data;
   }
 
   async createPreview() {
-    if(this.data.preview === undefined){
+    if (this.data.preview === undefined) {
       this.data = await this.getData();
     }
     const preview = this.data.preview;
-    this.addImage(preview);
+    this.showPreview(preview);
     this.addButton();
   }
 
@@ -92,6 +108,14 @@ class MysteriousImage {
     button.innerText = "Pay to see";
     button.onclick = () => this.handlePay(this);
     parent.appendChild(button);
+  }
+
+  showLoading() {}
+}
+
+class MysteriousImage extends MysteriousElement {
+  showPreview(preview) {
+    this.addImage(preview);
   }
 
   reveal(imgSrc) {
@@ -106,8 +130,25 @@ class MysteriousImage {
     img.src = imgSrc;
     parent.appendChild(img);
   }
+}
 
-  showLoading() {}
+class MysteriousText extends MysteriousElement {
+  showPreview(preview) {
+    this.addText(preview);
+  }
+
+  reveal(text) {
+    const parent = this.parent;
+    parent.innerHTML = "";
+    this.addText(text);
+  }
+
+  addText(text) {
+    const parent = this.parent;
+    const txt = document.createElement("span");
+    txt.textContent = text;
+    parent.appendChild(txt);
+  }
 }
 
 class SimpleSigner {
