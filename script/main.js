@@ -70,7 +70,6 @@ class Mysterious {
         }),
       });
       const data = await res.json();
-      console.log(data);
       if (data) {
         el.reveal(data.data);
       }
@@ -98,15 +97,23 @@ class MysteriousElement {
       this.data = await this.getData();
     }
     const preview = this.data.preview;
+    this.addStyles();
     this.showPreview(preview);
     this.addButton();
+  }
+
+  addStyles(){
+    this.parent.style.cssText = "position: relative;display: flex;align-items: center; justify-content: center;max-height: 100%;max-width: 100%;"
   }
 
   addButton() {
     const parent = this.parent;
     const button = document.createElement("button");
     button.innerText = "Pay to see";
-    button.classList.add("mysterious-button");
+    button.style.cssText = "width: 100px;height: 40px;border-radius: 50px;background-color: #16181b;border: 1px solid violet;color: white;position: absolute;z-index: 1;";
+    button.addEventListener("mouseenter", (e)=>{   
+      e.target.style.cursor = "pointer";
+    }, false);
     button.onclick = () => this.handlePay(this);
     parent.appendChild(button);
   }
@@ -129,6 +136,7 @@ class MysteriousImage extends MysteriousElement {
     const parent = this.parent;
     const img = document.createElement("img");
     img.src = imgSrc;
+    img.style.cssText = "max-width: 100%;max-height: 100%;";
     parent.appendChild(img);
   }
 }
