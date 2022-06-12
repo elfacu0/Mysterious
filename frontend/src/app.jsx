@@ -4,18 +4,39 @@ import { Button, styled, Container, Text } from "@nextui-org/react";
 import { FormModal } from "./components/FormModal";
 import { primaryGradientColor } from "./constants";
 import { FAQModal } from "./components/FAQModal";
+import { SuccessFormModal } from "./components/SuccessFormModal";
 
 export function App() {
+  const [hash, setHash] = useState(null);
   const [openFAQModal, setOpenFAQModal] = useState(false);
   const [openFormModal, setOpenFormModal] = useState(false);
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+
+  const onSuccessFormModal = () => {
+    setOpenFormModal(false);
+    setOpenSuccessModal(true);
+  };
 
   const renderFormModal = () => (
-    <FormModal open={openFormModal} onClose={() => setOpenFormModal(false)} />
+    <FormModal
+      open={openFormModal}
+      onClose={() => setOpenFormModal(false)}
+      onSuccess={onSuccessFormModal}
+      setHash={setHash}
+    />
   );
 
   const renderFAQModal = () => (
     <FAQModal open={openFAQModal} onClose={() => setOpenFAQModal(false)} />
-  )
+  );
+
+  const renderSuccessModal = () => (
+    <SuccessFormModal
+      open={openSuccessModal}
+      onClose={() => setOpenSuccessModal(false)}
+      hash={hash}
+    />
+  );
 
   return (
     <Container display="flex" direction="column">
@@ -59,8 +80,9 @@ export function App() {
           How does it works?
         </Button>
       </Container>
-      {renderFormModal()}
-      {renderFAQModal()}
+      {hash && renderSuccessModal()}
+      {openFormModal && renderFormModal()}
+      {openFAQModal && renderFAQModal()}
     </Container>
   );
 }
