@@ -126,7 +126,6 @@ export const FormModal = ({ open, onClose, setHash, onSuccess }) => {
     xhr.responseType = "blob";
     xhr.send();
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.type === "image") {
@@ -139,7 +138,10 @@ export const FormModal = ({ open, onClose, setHash, onSuccess }) => {
             data: base64,
             preview: previewBase64,
           })
-          .then((res) => setHash(res.data.id))
+          .then((res) => {
+            setHash(res.data.id);
+            onSuccess();
+          })
           .catch((err) => {
             console.log(err);
           });
@@ -147,12 +149,14 @@ export const FormModal = ({ open, onClose, setHash, onSuccess }) => {
     } else {
       api
         .post("/save", formData)
-        .then((res) => setHash(res.data.id))
+        .then((res) => {
+          setHash(res.data.id);
+          onSuccess();
+        })
         .catch((err) => {
           console.log(err);
         });
     }
-    onSuccess()
   };
 
   return (
