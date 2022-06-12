@@ -1,0 +1,27 @@
+{
+  "name": "mysterious",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build-frontend && node backend/index.js",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "full-install": "concurrently \"npm run frontend-install\" \"npm run backend-install\"",
+    "frontend-install": "cd frontend && npm install",
+    "backend-install": "cd backend && npm install",
+    "build-frontend": "cd frontend && npm run build && mv dist ../backend/dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OLucho/Mysterious.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OLucho/Mysterious/issues"
+  },
+  "homepage": "https://github.com/OLucho/Mysterious#readme",
+  "dependencies": {
+    "concurrently": "^7.2.1"
+  }
+}
