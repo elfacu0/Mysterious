@@ -102,18 +102,24 @@ class MysteriousElement {
     this.addButton();
   }
 
-  addStyles(){
-    this.parent.style.cssText = "position: relative;display: flex;align-items: center; justify-content: center;max-height: 100%;max-width: 100%;"
+  addStyles() {
+    this.parent.style.cssText =
+      "position: relative;display: flex;align-items: center; justify-content: center;max-height: 100%;max-width: 100%;";
   }
 
   addButton() {
     const parent = this.parent;
     const button = document.createElement("button");
     button.innerText = "Pay to see";
-    button.style.cssText = "width: 100px;height: 40px;border-radius: 50px;background-color: #16181b;border: 1px solid violet;color: white;position: absolute;z-index: 1;";
-    button.addEventListener("mouseenter", (e)=>{   
-      e.target.style.cursor = "pointer";
-    }, false);
+    button.style.cssText =
+      "width: 100px;height: 40px;border-radius: 50px;background-color: #16181b;border: 1px solid violet;color: white;position: absolute;z-index: 1;max-width: 100%;max-height: 100%;";
+    button.addEventListener(
+      "mouseenter",
+      (e) => {
+        e.target.style.cursor = "pointer";
+      },
+      false
+    );
     button.onclick = () => this.handlePay(this);
     parent.appendChild(button);
   }
