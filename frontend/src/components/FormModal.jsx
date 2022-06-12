@@ -205,7 +205,7 @@ export const FormModal = ({ open, onClose, setHash, onSuccess }) => {
             color="secondary"
             size="md"
             placeholder="$10"
-            label="Price"
+            label="Price (higher than $100)"
             value={formData.price}
             onChange={(e) => {
               setFormData({ ...formData, price: e.target.value });

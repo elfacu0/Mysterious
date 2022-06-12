@@ -25,9 +25,16 @@ export const SuccessFormModal = ({ open, onClose, hash }) => {
       <Modal.Body>
         <code>
           <Text as="h4" color="white">
-            {`<div class="mysterious-text" data-hash-id={${hash}}></div>`}{" "}
+            {`<div class="mysterious-text" data-hash-id="${hash}"></div>`}{" "}
           </Text>
         </code>
+
+        <Text>
+          Dont forget to add the script{" "}
+          <a href="https://github.com/OLucho/Mysterious/blob/master/script/main.js" target="_blank">
+            Link
+          </a>
+        </Text>
       </Modal.Body>
       <Modal.Footer>
         <Button auto onClick={() => onClose()}>
