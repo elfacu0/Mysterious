@@ -14,13 +14,20 @@ import { useState, useRef } from "preact/hooks";
 import { api } from "../services/api";
 import { primaryGradientColor } from "../constants";
 
-export const FormModal = ({ open, onClose, setHash, onSuccess }) => {
+export const FormModal = ({
+  open,
+  onClose,
+  setHash,
+  onSuccess,
+  type,
+  setType,
+}) => {
+
   const [image, setImage] = useState(null);
   const [inputRange, setInputRange] = useState(5);
-  const [radioSelected, setRadioSelected] = useState("image");
   const [formData, setFormData] = useState({
     address: "",
-    type: radioSelected,
+    type,
     price: "",
     data: "",
     preview: "",
@@ -92,9 +99,9 @@ export const FormModal = ({ open, onClose, setHash, onSuccess }) => {
         type="radio"
         value="image"
         name="option"
-        defaultChecked={radioSelected === "image"}
+        defaultChecked={type === "image"}
         onChange={() => {
-          setRadioSelected("image");
+          setType("image");
           setFormData({ ...formData, type: "image" });
         }}
       />{" "}
@@ -104,9 +111,9 @@ export const FormModal = ({ open, onClose, setHash, onSuccess }) => {
         type="radio"
         value="text"
         name="option"
-        defaultChecked={radioSelected === "text"}
+        defaultChecked={type === "text"}
         onChange={() => {
-          setRadioSelected("text");
+          setType("text");
           setFormData({ ...formData, type: "text" });
         }}
       />{" "}
@@ -179,7 +186,7 @@ export const FormModal = ({ open, onClose, setHash, onSuccess }) => {
       <form>
         <Modal.Body>
           {renderRadioButtons()}
-          {radioSelected === "image" ? (
+          {type === "image" ? (
             renderImageItems()
           ) : (
             <Input
@@ -190,7 +197,7 @@ export const FormModal = ({ open, onClose, setHash, onSuccess }) => {
               onChange={(e) =>
                 setFormData({ ...formData, data: e.target.value })
               }
-              value={radioSelected === "text" ? formData.data : ""}
+              value={type === "text" ? formData.data : ""}
             />
           )}
 

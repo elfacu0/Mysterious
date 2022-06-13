@@ -8,6 +8,7 @@ import { SuccessFormModal } from "./components/SuccessFormModal";
 
 export function App() {
   const [hash, setHash] = useState(null);
+  const [type, setType] = useState("image");
   const [openFAQModal, setOpenFAQModal] = useState(false);
   const [openFormModal, setOpenFormModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
@@ -22,6 +23,8 @@ export function App() {
       onClose={() => setOpenFormModal(false)}
       onSuccess={onSuccessFormModal}
       setHash={setHash}
+      type={type}
+      setType={setType}
     />
   );
 
@@ -34,6 +37,7 @@ export function App() {
       open={openSuccessModal}
       onClose={() => setOpenSuccessModal(false)}
       hash={hash}
+      type={type}
     />
   );
 

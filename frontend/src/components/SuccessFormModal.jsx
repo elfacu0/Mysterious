@@ -1,7 +1,7 @@
-import { Modal, Button, Text, Grid, Collapse } from "@nextui-org/react";
+import { Modal, Button, Text, Collapse } from "@nextui-org/react";
 import { primaryGradientColor } from "../constants";
 
-export const SuccessFormModal = ({ open, onClose, hash }) => {
+export const SuccessFormModal = ({ open, onClose, hash, type }) => {
   return (
     <Modal
       scroll
@@ -25,13 +25,16 @@ export const SuccessFormModal = ({ open, onClose, hash }) => {
       <Modal.Body>
         <code>
           <Text as="h4" color="white">
-            {`<div class="mysterious-text" data-hash-id="${hash}"></div>`}{" "}
+            {`<div class="mysterious-${type}" data-hash-id="${hash}"></div>`}{" "}
           </Text>
         </code>
 
         <Text>
           Dont forget to add the script{" "}
-          <a href="https://github.com/OLucho/Mysterious/blob/master/script/main.js" target="_blank">
+          <a
+            href="https://github.com/OLucho/Mysterious/blob/master/script/main.js"
+            target="_blank"
+          >
             Link
           </a>
         </Text>
