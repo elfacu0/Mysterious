@@ -31,10 +31,7 @@ export const SuccessFormModal = ({ open, onClose, hash, type }) => {
 
         <Text>
           Dont forget to add the script{" "}
-          <a
-            href="https://github.com/OLucho/Mysterious/blob/master/script/main.js"
-            target="_blank"
-          >
+          <a href="https://cdn.jsdelivr.net/gh/OLucho/Mysterious/script/main.js" target="_blank">
             Link
           </a>
         </Text>
