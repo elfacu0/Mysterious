@@ -11,7 +11,7 @@
  ![create-mystery](https://i.imgur.com/6R64P4X.png)
  2. Click Submit and copy your code
  ![mystery-code](https://i.imgur.com/sY8KDEz.png)
- 3. Paste the code anywhere you want in your html, and that's it
+ 3. Add our script at the bottom of your html's body, paste your code anywhere you want, and that's it
  ![mistery-preview](https://i.imgur.com/zayZK5a.png)
  
  
