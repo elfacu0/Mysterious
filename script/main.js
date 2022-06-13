@@ -3,7 +3,7 @@ const { Keypair, Asset, Server, TransactionBuilder, Operation } = sdk;
 const server = new Server("https://horizon-testnet.stellar.org");
 
 const DESTINATION_KEY =
-  "GA3Z7M2YJE5M5NP5LU73C7ZZRNEUN63XSLUG5J5AK56HQ6GXDBBG7OOR";
+  "GCOLLSHCLGKIAI2QAM4HDKCQQUWBR4KTC2FMAIUJYIYPF7QFOTBB4EUU";
 const API_URL = "https://solar-heliotrope-protest.glitch.me";
 //Object oriented programs are offered as alternatives to correct ones
 class Mysterious {
