@@ -58,12 +58,14 @@ export function App() {
 
       <Container
         fluid
+        sm
         display="flex"
         justify="center"
         direction="column"
         css={{
           marginTop: "4rem",
         }}
+
       >
         <Button
           bordered
@@ -76,7 +78,7 @@ export function App() {
         </Button>
         <Button
           bordered
-          color="warning"
+          color="secondary"
           shadow
           onPress={() => setOpenFAQModal(true)}
         >
