@@ -31,7 +31,7 @@ export const FAQModal = ({ open, onClose }) => {
   return (
     <Modal
       scroll
-      width="60%"
+      width="90%"
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
       closeButton

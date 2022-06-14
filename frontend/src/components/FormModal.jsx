@@ -24,6 +24,7 @@ export const FormModal = ({
 }) => {
 
   const [image, setImage] = useState(null);
+  const [imageURL, setImageURL] = useState(null)
   const [inputRange, setInputRange] = useState(5);
   const [formData, setFormData] = useState({
     address: "",
@@ -48,6 +49,7 @@ export const FormModal = ({
       <Label
         css={{
           border: image ? "1px solid green" : `1px solid violet`,
+          width: "100%"
         }}
       >
         <Input
@@ -61,6 +63,15 @@ export const FormModal = ({
         />
         Upload Image
       </Label>
+      <Spacer />
+      <Input 
+        label="Or enter image URL"
+        color="secondary"
+        css={{border: "1px solid violet", display: image && "none"}}
+        fullWidth
+        value={imageURL}
+        onChange={(e) => setImageURL(e.target.value)}
+      />
 
       {image && (
         <>
@@ -93,7 +104,7 @@ export const FormModal = ({
     </Container>
   );
   const renderRadioButtons = () => (
-    <Container>
+    <Container display="flex" alignItems="center" justify="space-evenly">
       <p>Choose One</p>
       <input
         type="radio"
@@ -104,9 +115,8 @@ export const FormModal = ({
           setType("image");
           setFormData({ ...formData, type: "image" });
         }}
-      />{" "}
+      />
       Image
-      <Spacer />
       <input
         type="radio"
         value="text"
@@ -238,7 +248,7 @@ export const FormModal = ({
 
 const Label = styled("label", {
   display: "inline-block",
-  padding: "6px 12px",
+  padding: "6px",
   cursor: "pointer",
   borderRadius: "999px",
 });
