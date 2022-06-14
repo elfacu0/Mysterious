@@ -63,15 +63,15 @@ export const FormModal = ({
         />
         Upload Image
       </Label>
-      <Spacer />
-      <Input 
+      {/* <Spacer />
+      <Input  // TODO Implement this
         label="Or enter image URL"
         color="secondary"
         css={{border: "1px solid violet", display: image && "none"}}
         fullWidth
         value={imageURL}
         onChange={(e) => setImageURL(e.target.value)}
-      />
+      /> */}
 
       {image && (
         <>
