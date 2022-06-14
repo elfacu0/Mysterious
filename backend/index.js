@@ -6,6 +6,7 @@ app.use(bodyParser.json());
 const cors = require("cors");
 app.use(cors());
 const port = process.env.PORT || 3000;
+const { LoremIpsum } = require("lorem-ipsum");
 
 const { initializeApp } = require("firebase/compat/app");
 const {
@@ -109,11 +110,8 @@ async function saveToDb(params) {
   if (Number(price) < 100) throw new Error("Price must be higher than 100");
   const col = collection(db, "mysterious-elements");
   if (type == "text") {
-    preview =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-        .split(" ")
-        .splice(0, data.split(" ").length)
-        .join(" ");
+    const lorem = new LoremIpsum();
+    preview = lorem.generateWords(data.split(" ").length);
   }
   const res = await addDoc(col, {
     address,
